@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+
+    <!--<file-path> =  내부 앱 스토리지 / getFileDir -->
+    <!--<cache-path> =  내부 앱 캐시 스토리지 / getCacheDir -->
+    <!--<external-files-path> = 외부 앱 전용 스토리지 file / getExternalFilesDir 사용시-->
+    <!--<external-cache-path> = 외부 앱 전용 스토리지 cache / getExternalCacheDir 사용시-->
+    <!--<external-path> = 공용 외부 저장소 사용 시 / Environment.getExternalStoragyDirectory-->
+    <external-files-path name="cameraImg" path="Pictures/"/>
+</paths>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.imageuploadtest">
+
+    <!--앱애서 카메라 기능을 쓴다고 알려줍니다.
+     required ="true" 시 카메라가 없는 기기는 구글플레이에서 앱 다운로드가 불가합니다.-->
+    <uses-feature android:name="android.hardware.camera"  android:required="true" />
+
+
+    <!-- 'getExternalFilesDir()' 내부 파일 저장이 필요 할 경우 -->
+    <!-- 4.3버전까지는 'getExternalFilesDir()' 영역도 퍼미션이 필요 했음 -->
+    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18"/>-->
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ImageUploadTest">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
+    </application>
+
+</manifest>
