@@ -91,15 +91,16 @@ object Utils {
             )
             put(MediaStore.Images.Media.DISPLAY_NAME, displayNm)
             put(MediaStore.Images.Media.MIME_TYPE, mimeType)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                put(MediaStore.Images.Media.IS_PENDING, 1)
-            }
+
+            //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            put(MediaStore.Images.Media.IS_PENDING, 1)
         }
 
         //2) contentResolver insert and get uri
-        val collection =
-            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        val itemUri: Uri? = context.contentResolver.insert(collection, contentValue)
+        val itemUri: Uri? = context.contentResolver.insert(
+            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY),
+            contentValue
+        )
 
         if (itemUri == null) {
             Log.e("syTest", "itemUri is Null")

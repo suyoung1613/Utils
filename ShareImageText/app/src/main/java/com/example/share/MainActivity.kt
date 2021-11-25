@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.example.share.databinding.ActivityMainBinding
 import java.io.File
+
 class MainActivity : AppCompatActivity() {
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
@@ -25,24 +26,22 @@ class MainActivity : AppCompatActivity() {
         initBtns()
     }
 
+    fun getTestBitmap(): Bitmap? {
+        val testBitmap = Utils.getBitmapFromView(binding.lyContainer)
+        if (testBitmap == null) {
+            Toast.makeText(applicationContext, "이미지 에러", Toast.LENGTH_LONG).show()
+        }
+        return testBitmap
+    }
+
     private fun initBtns() {
 
         binding.btnShareImgSpecificStorage.setOnClickListener {
-            val testBitmap = Utils.getBitmapFromView(binding.lyContainer)
-            if (testBitmap == null) {
-                Toast.makeText(applicationContext, "이미지 에러", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-            shareImageInSpecificStorage(applicationContext, testBitmap)
+            shareImageInSpecificStorage(applicationContext, getTestBitmap())
         }
 
         binding.btnShareImgSharedStorage.setOnClickListener {
-            val testBitmap = Utils.getBitmapFromView(binding.lyContainer)
-            if (testBitmap == null) {
-                Toast.makeText(applicationContext, "이미지 에러", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-            shareImageInShareStorage(applicationContext, testBitmap)
+            shareImageInShareStorage(applicationContext, getTestBitmap())
         }
 
         binding.btnShareText.setOnClickListener { shareText("공유할 텍스트") }
@@ -56,7 +55,8 @@ class MainActivity : AppCompatActivity() {
      * @param context Context
      * @param bitmap 공유하고자 하는 이미지
      */
-    private fun shareImageInSpecificStorage(context: Context, bitmap: Bitmap) {
+    private fun shareImageInSpecificStorage(context: Context, bitmap: Bitmap?) {
+        if (bitmap == null) return
 
         /**
          *1) 이미지 저장(/storage/emulated/0/Android/data/[앱 패키지명]/files/ShareImgFolder)
@@ -101,24 +101,25 @@ class MainActivity : AppCompatActivity() {
      *
      * 공용공간 Picture 폴더에 사진 저장 후 공유
      *
-     *
-     *
      * @param context Context
      * @param bitmap 공유하고자 하는 이미지
      */
-    private fun shareImageInShareStorage(context: Context, bitmap: Bitmap) {
+    private fun shareImageInShareStorage(context: Context, bitmap: Bitmap?) {
+        if (bitmap == null) return
 
         //공유공간 접근시 WRITE 퍼미션 체크
         //targetSdk
-        val hasPermission: Boolean
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            hasPermission = Utils.checkWritePermission(this)
-        } else {
-            hasPermission = true
-        }
+        val hasPermission: Boolean =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                true
+            } else {
+                Utils.checkWritePermission(this)
+            }
+
         if (!hasPermission) {
             return
         }
+
         /**
          *1) 이미지 저장(/)
          */
