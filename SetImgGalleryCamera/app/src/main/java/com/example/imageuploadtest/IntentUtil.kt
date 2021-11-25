@@ -1,5 +1,7 @@
 package com.example.imageuploadtest
 
+import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -25,17 +27,18 @@ val pickIntent = Intent(Intent.ACTION_PICK).apply {
 val pictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
 object IntentMaker {
+
     lateinit var currentPhotoPath: String
+
     fun getFullSizePictureIntent(context: Context): Intent {
         currentPhotoPath = ""//초기화
         val fullSizeCaptureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
-        // Ensure that there's a camera activity to handle the intent
         //1) File 생성 - 촬영 사진이 저장 될
         val photoFile: File? = try {
             createImageFile(context)
         } catch (ex: IOException) {
-            // Error occurred while creating the File //todo
+            // Error occurred while creating the File Todo
             null
         }
 
@@ -69,5 +72,20 @@ object IntentMaker {
             // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
         }
+    }
+
+    /**
+     * Android Q 이상일 경우
+     * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+     */
+    fun getUriForAndroidQ(contentResolver: ContentResolver): Uri? {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val picturePath = Environment.DIRECTORY_PICTURES
+        val contentValues = ContentValues()
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "$timeStamp.jpg")
+        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
+        contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, picturePath)
+
+        return contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
     }
 }
