@@ -72,9 +72,9 @@ class MainActivity : AppCompatActivity() {
 
                     val needResize = true
                     if (needResize) {
-                        setAdjustedImgUri(currentImageUri)
+                        setAdjustedUriAdjusted(currentImageUri)
                     } else {
-                        setImgUriFullSize(currentImageUri)
+                        setImgUri(currentImageUri)
                     }
                 }
 
@@ -98,10 +98,9 @@ class MainActivity : AppCompatActivity() {
 
 
     /**
-     * Set Img 1) Uri를 사용해 이미지 셋
-     *
+     * Set Img 1) Uri를 사용해 이미지 셋 (Full-Size)
      */
-    private fun setImgUriFullSize(imgUri: Uri) {
+    private fun setImgUri(imgUri: Uri) {
         imgUri.let {
             val bitmap: Bitmap
             if (Build.VERSION.SDK_INT < 28) {
@@ -116,13 +115,14 @@ class MainActivity : AppCompatActivity() {
                 bitmap = ImageDecoder.decodeBitmap(source)
                 binding.ivImg.setImageBitmap(bitmap)
             }
+            Log.i("syTest", "Bitmap W/H = " + bitmap.width + " / " + bitmap.height)
         }
     }
 
     /**
      * Set Img 2) Uri를 사용해 이미지 셋 (Resize + Rotate가 필요할 경우 사용)
      */
-    private fun setAdjustedImgUri(imgUri: Uri) {
+    private fun setAdjustedUriAdjusted(imgUri: Uri) {
         //1)회전할 각도 구하기
         var degrees = 0f
         contentResolver.openInputStream(imgUri)?.use { inputStream ->
