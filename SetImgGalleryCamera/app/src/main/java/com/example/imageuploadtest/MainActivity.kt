@@ -70,14 +70,20 @@ class MainActivity : AppCompatActivity() {
             val fullSizePictureIntent =
                 IntentMaker.getPictureIntent_Shared_Q_N_Over(applicationContext)//TODO 정상 동작 되구로
             fullSizePictureIntent.resolveActivity(packageManager)?.also {
-                startActivityForResult(fullSizePictureIntent, REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q)
+                startActivityForResult(
+                    fullSizePictureIntent,
+                    REQ_IMG_CAPTURE_FULL_SIZE_SHARED_Q_AND_OVER
+                )
             }
-        }else{
+        } else {
             //TODO Permission Check 필요
             val fullSizePictureIntent =
                 IntentMaker.getPictureIntent_Shared_Under_Q(applicationContext)
             fullSizePictureIntent.resolveActivity(packageManager)?.also {
-                startActivityForResult(fullSizePictureIntent, REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q)
+                startActivityForResult(
+                    fullSizePictureIntent,
+                    REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q
+                )
             }
         }
 
@@ -115,12 +121,15 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE -> {
-//                    setAdjustedImgFilePath(IntentMaker.currentPhotoPath)
                     setAdjustedUri(IntentMaker.photoURI)
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q -> {
                     setAdjustedUri(IntentMaker.photoSharedURI_UNDER_Q)
+                }
+
+                REQ_IMG_CAPTURE_FULL_SIZE_SHARED_Q_AND_OVER -> {
+
                 }
             }
         }
@@ -201,6 +210,9 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Set Img 3) FilePath 사용해 이미지 셋(Resize + Rotate가 필요할 경우 사용)
+     *  filePath : 앱 전용 공간 FilePath (O)
+     *            공용 공간 테스트 필요 //TODO
+     *
      */
     private fun setAdjustedImgFilePath(filePath: String) {
         //1)회전할 각도 구하기
