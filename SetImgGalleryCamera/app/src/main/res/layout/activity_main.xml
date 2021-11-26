@@ -44,10 +44,19 @@
                 android:textSize="30dp" />
 
             <TextView
-                android:id="@+id/tv_camera_origin_size"
+                android:id="@+id/tv_camera_full_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
                 android:text="3) Camera With Origin Size"
+                android:textSize="30dp" />
+
+
+            <TextView
+                android:id="@+id/tv_camera_full_size_shared"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4) Camera With Origin Size(Shared 영역)"
                 android:textSize="30dp" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>

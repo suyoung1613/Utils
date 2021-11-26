@@ -9,6 +9,7 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -29,20 +30,27 @@ class MainActivity : AppCompatActivity() {
 
         binding.tvGallery.setOnClickListener { pickImg() }
         binding.tvCamera.setOnClickListener { takePicture() }
-        binding.tvCameraOriginSize.setOnClickListener { takePictureFullSize() }
+        binding.tvCameraFullSize.setOnClickListener { takePictureFullSize() }
+        binding.tvCameraFullSizeShared.setOnClickListener { takePictureFullSize_Shared() }
     }
 
     /**
      * Call 1)갤러리 이미지
      */
     private fun pickImg() {
-        startActivityForResult(pickIntent, REQ_SELECT_IMG)
+        Intent(Intent.ACTION_PICK).apply {
+            type = MediaStore.Images.Media.CONTENT_TYPE
+            data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            startActivityForResult(this, REQ_SELECT_IMG)
+        }
+
     }
 
     /**
      * Call 2)카메라 촬영 이미지 (썸네일 크기의 작은 이미지)
      */
     private fun takePicture() {
+        val pictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         pictureIntent.resolveActivity(packageManager)?.also {
             startActivityForResult(pictureIntent, REQ_IMG_CAPTURE)
         }
@@ -52,13 +60,23 @@ class MainActivity : AppCompatActivity() {
      * Call 3)카메라 촬영 이미지 (원본 Full-Size)
      */
     private fun takePictureFullSize() {
-        val fullSizePictureIntent = IntentMaker.getFullSizePictureIntent(applicationContext)
+        val fullSizePictureIntent = IntentMaker.getPictureIntent(applicationContext)
         fullSizePictureIntent.resolveActivity(packageManager)?.also {
             startActivityForResult(fullSizePictureIntent, REQ_IMG_CAPTURE_FULL_SIZE)
         }
     }
 
+    private fun takePictureFullSize_Shared() {
+        val fullSizePictureIntent =
+            IntentMaker.getPictureIntent_Shared_Q(applicationContext.contentResolver)
+        fullSizePictureIntent.resolveActivity(packageManager)?.also {
+            startActivityForResult(fullSizePictureIntent, REQ_IMG_CAPTURE_FULL_SIZE_SHARED)
+        }
+    }
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        Environment.getExternalStorageDirectory()
         super.onActivityResult(requestCode, resultCode, intent)
         Log.w("syTest", "[onActivityResult] requestCode = $requestCode, resultCode = $resultCode")
         if (resultCode == Activity.RESULT_OK) {
@@ -72,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
                     val needResize = true
                     if (needResize) {
-                        setAdjustedUriAdjusted(currentImageUri)
+                        setAdjustedUri(currentImageUri)
                     } else {
                         setImgUri(currentImageUri)
                     }
@@ -90,6 +108,10 @@ class MainActivity : AppCompatActivity() {
 
                 REQ_IMG_CAPTURE_FULL_SIZE -> {
                     setAdjustedImgFilePath(IntentMaker.currentPhotoPath)
+                }
+
+                REQ_IMG_CAPTURE_FULL_SIZE_SHARED->{
+                    setAdjustedUri(IntentMaker.currentPhotoUri)
                 }
             }
         }
@@ -122,7 +144,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Set Img 2) Uri를 사용해 이미지 셋 (Resize + Rotate가 필요할 경우 사용)
      */
-    private fun setAdjustedUriAdjusted(imgUri: Uri) {
+    private fun setAdjustedUri(imgUri: Uri) {
         //1)회전할 각도 구하기
         var degrees = 0f
         contentResolver.openInputStream(imgUri)?.use { inputStream ->

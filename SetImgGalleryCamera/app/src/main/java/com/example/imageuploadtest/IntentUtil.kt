@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
@@ -18,19 +19,14 @@ import java.util.*
 const val REQ_SELECT_IMG = 200
 const val REQ_IMG_CAPTURE = 300
 const val REQ_IMG_CAPTURE_FULL_SIZE = 400
+const val REQ_IMG_CAPTURE_FULL_SIZE_SHARED = 500
 
 
-val pickIntent = Intent(Intent.ACTION_PICK).apply {
-    type = MediaStore.Images.Media.CONTENT_TYPE
-    data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-}
-val pictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
 object IntentMaker {
-
     lateinit var currentPhotoPath: String
-
-    fun getFullSizePictureIntent(context: Context): Intent {
+    lateinit var currentPhotoUri: Uri
+    fun getPictureIntent(context: Context): Intent {
         currentPhotoPath = ""//초기화
         val fullSizeCaptureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
@@ -75,17 +71,39 @@ object IntentMaker {
     }
 
     /**
+     * 공유 영역 저장
      * Android Q 이상일 경우
      * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
      */
-    fun getUriForAndroidQ(contentResolver: ContentResolver): Uri? {
+    fun getPictureIntent_Shared_Q(contentResolver: ContentResolver): Intent {
+        currentPhotoUri = Uri.EMPTY
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val picturePath = Environment.DIRECTORY_PICTURES
         val contentValues = ContentValues()
-        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "$timeStamp.jpg")
+        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "UriForAndroidQ_${timeStamp}.jpg")
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
         contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, picturePath)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            contentValues.put(MediaStore.Images.Media.IS_PENDING, 1)
+        }
 
-        return contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        currentPhotoUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)?: Uri.EMPTY
+//1)[MediaStore.Images.Media.EXTERNAL_CONTENT_URI] : content://media/external/images/media/1000
+        //Android 11 - Crash
+
+//        currentPhotoUri =contentResolver.insert(MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY),contentValues)?: Uri.EMPTY
+//2)MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) content://media/external_primary/images/media/1007
+//2)MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)  content://media/external/images/media/1009
+
+        Log.w("syTest","getPictureIntent_Shared_Q URI = "+ currentPhotoUri)
+
+
+
+        //2)content://media/external_primary/images/media/1006
+        val fullSizeCaptureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        fullSizeCaptureIntent.putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri)
+        return fullSizeCaptureIntent
     }
 }
+
+
