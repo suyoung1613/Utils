@@ -111,6 +111,7 @@ class MainActivity : AppCompatActivity() {
         //targetSdk
         val hasPermission: Boolean =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                //29이상(10.0)
                 true
             } else {
                 Utils.checkWritePermission(this)
