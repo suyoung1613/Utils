@@ -9,7 +9,6 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -67,16 +66,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun takePictureFullSize_Shared() {
-        val fullSizePictureIntent =
-            IntentMaker.getPictureIntent_Shared_Q(applicationContext.contentResolver)
-        fullSizePictureIntent.resolveActivity(packageManager)?.also {
-            startActivityForResult(fullSizePictureIntent, REQ_IMG_CAPTURE_FULL_SIZE_SHARED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val fullSizePictureIntent =
+                IntentMaker.getPictureIntent_Shared_Q_N_Over(applicationContext)//TODO 정상 동작 되구로
+            fullSizePictureIntent.resolveActivity(packageManager)?.also {
+                startActivityForResult(fullSizePictureIntent, REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q)
+            }
+        }else{
+            //TODO Permission Check 필요
+            val fullSizePictureIntent =
+                IntentMaker.getPictureIntent_Shared_Under_Q(applicationContext)
+            fullSizePictureIntent.resolveActivity(packageManager)?.also {
+                startActivityForResult(fullSizePictureIntent, REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q)
+            }
         }
+
     }
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        Environment.getExternalStorageDirectory()
         super.onActivityResult(requestCode, resultCode, intent)
         Log.w("syTest", "[onActivityResult] requestCode = $requestCode, resultCode = $resultCode")
         if (resultCode == Activity.RESULT_OK) {
@@ -107,11 +115,12 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE -> {
-                    setAdjustedImgFilePath(IntentMaker.currentPhotoPath)
+//                    setAdjustedImgFilePath(IntentMaker.currentPhotoPath)
+                    setAdjustedUri(IntentMaker.photoURI)
                 }
 
-                REQ_IMG_CAPTURE_FULL_SIZE_SHARED->{
-                    setAdjustedUri(IntentMaker.currentPhotoUri)
+                REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q -> {
+                    setAdjustedUri(IntentMaker.photoSharedURI_UNDER_Q)
                 }
             }
         }

@@ -7,4 +7,5 @@
     <!--<external-cache-path> = 외부 앱 전용 스토리지 cache / getExternalCacheDir 사용시-->
     <!--<external-path> = 공용 외부 저장소 사용 시 / Environment.getExternalStoragyDirectory-->
     <external-files-path name="cameraImg" path="Pictures/"/>
+    <external-path name="cameraImgShared" path="Pictures/"/>
 </paths>
