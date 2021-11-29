@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
      * Call 3)카메라 촬영 이미지 (원본 Full-Size)
      */
     private fun takePictureFullSize() {
-        val fullSizePictureIntent = IntentMaker.getPictureIntent(applicationContext)
+        val fullSizePictureIntent = CameraIntentMaker.getPictureIntent(applicationContext)
         fullSizePictureIntent.resolveActivity(packageManager)?.also {
             startActivityForResult(fullSizePictureIntent, REQ_IMG_CAPTURE_FULL_SIZE)
         }
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
     private fun takePictureFullSize_Shared() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val fullSizePictureIntent =
-                IntentMaker.getPictureIntent_Shared_Q_N_Over(applicationContext)//TODO 정상 동작 되구로
+                CameraIntentMaker.getPictureIntent_Shared_Q_N_Over(applicationContext)//TODO 정상 동작 되구로
             fullSizePictureIntent.resolveActivity(packageManager)?.also {
                 startActivityForResult(
                     fullSizePictureIntent,
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             //TODO Permission Check 필요
             val fullSizePictureIntent =
-                IntentMaker.getPictureIntent_Shared_Under_Q(applicationContext)
+                CameraIntentMaker.getPictureIntent_Shared_Under_Q(applicationContext)
             fullSizePictureIntent.resolveActivity(packageManager)?.also {
                 startActivityForResult(
                     fullSizePictureIntent,
@@ -97,8 +97,7 @@ class MainActivity : AppCompatActivity() {
             when (requestCode) {
                 REQ_SELECT_IMG -> {
                     Log.w(
-                        "syTest",
-                        "[onActivityResult] intent = $intent, currentImageUri = ${intent?.data}"
+                        "syTest", "REQ_SELECT_IMG, currentImageUri = ${intent?.data}"
                     )
                     val currentImageUri = intent?.data ?: return
 
@@ -115,17 +114,17 @@ class MainActivity : AppCompatActivity() {
                     val bitmap = extras?.get("data") as Bitmap?
                     Log.w(
                         "syTest",
-                        "[onActivityResult] intent = $intent, Bitmap W/H = ${bitmap?.width}/${bitmap?.height}"
+                        "REQ_IMG_CAPTURE, Bitmap W/H = ${bitmap?.width}/${bitmap?.height}"
                     )
                     binding.ivImg.setImageBitmap(bitmap)
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE -> {
-                    setAdjustedUri(IntentMaker.photoURI)
+                    setAdjustedUri(CameraIntentMaker.photoURI)
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q -> {
-                    setAdjustedUri(IntentMaker.photoSharedURI_UNDER_Q)
+                    setAdjustedUri(CameraIntentMaker.photoSharedURI_UNDER_Q)
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE_SHARED_Q_AND_OVER -> {

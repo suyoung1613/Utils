@@ -18,17 +18,17 @@ import java.util.*
 
 const val REQ_SELECT_IMG = 200 //이미지 픽
 const val REQ_IMG_CAPTURE = 300 //썸네일 크기
-const val REQ_IMG_CAPTURE_FULL_SIZE = 400 //앱 전용 공간
-const val REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q = 500 //공용공간 UNDER Q
-const val REQ_IMG_CAPTURE_FULL_SIZE_SHARED_Q_AND_OVER = 600//공용공간 Q AND OVER
+const val REQ_IMG_CAPTURE_FULL_SIZE = 400 //앱 전용 공간 - No Need WRITE Permission After Android 4.3 (API level 18)
+const val REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q = 500 //공용공간 - UNDER Q, Need WRITE Permission
+const val REQ_IMG_CAPTURE_FULL_SIZE_SHARED_Q_AND_OVER = 600//공용공간 Q AND OVER -...
 
 
-
-object IntentMaker {
+object CameraIntentMaker {
     lateinit var photoURI: Uri
     lateinit var photoSharedURI_Q_N_OVER: Uri
     lateinit var photoSharedURI_UNDER_Q: Uri
     fun getPictureIntent(context: Context): Intent {
+        photoURI = Uri.EMPTY
         val fullSizeCaptureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
         //1) File 생성 - 촬영 사진이 저장 될
@@ -72,7 +72,13 @@ object IntentMaker {
         }
     }
 
+    /**
+     * 공유 영역 저장
+     * Android Q 미만 일 경우 ( ~ Android 9.0)
+     * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+     */
     fun getPictureIntent_Shared_Under_Q(context: Context): Intent {
+        photoSharedURI_UNDER_Q = Uri.EMPTY
         val fullSizeCaptureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
         //1) File 생성 - 촬영 사진이 저장 될
@@ -102,9 +108,10 @@ object IntentMaker {
 //        2021-11-26 14:25:09.884 29107-29107/com.example.img W/syTest: [onActivityResult] requestCode = 500, resultCode = -1
         return fullSizeCaptureIntent
     }
+
     /**
      * 공유 영역 저장
-     * Android Q 이상일 경우 ( = API 29, Android 10.0)
+     * Android Q 이상일 경우, API 29~ (Android 10.0 ~ )
      * if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
      */
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -120,13 +127,16 @@ object IntentMaker {
             contentValues.put(MediaStore.Images.Media.IS_PENDING, 1)
         }
 
-        photoSharedURI_Q_N_OVER = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)?: Uri.EMPTY
+        photoSharedURI_Q_N_OVER = context.contentResolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        ) ?: Uri.EMPTY
         //[태스트 결과]
         //1)MediaStore.Images.Media.EXTERNAL_CONTENT_URI : content://media/external/images/media/1000
         //2)MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)  content://media/external/images/media/1009
         //3)MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) content://media/external_primary/images/media/1007
 
-        Log.w("syTest","getPictureIntent_Shared_Q URI = "+ photoSharedURI_Q_N_OVER)
+        Log.w("syTest", "getPictureIntent_Shared_Q URI = " + photoSharedURI_Q_N_OVER)
 
         //2)content://media/external_primary/images/media/1006
         val fullSizeCaptureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
