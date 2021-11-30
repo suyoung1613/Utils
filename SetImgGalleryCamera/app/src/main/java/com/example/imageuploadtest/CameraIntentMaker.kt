@@ -87,8 +87,7 @@ fun getPictureIntent_Shared_Under_Q(context: Context): Intent {
     val photoFile: File? = try {
         // getExternalStoragePublicDirectory(), with the DIRECTORY_PICTURES argument.
         // The directory provided by this method is shared among all apps. On Android 9 (API level 28) and lower, reading and writing to this directory requires the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions
-//        createImageFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)) //deprecated in 29(Q) = 28(Android 9)까지 사용 가능
-        createImageFile(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+        createImageFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)) //deprecated in 29(Q) = 28(Android 9)까지 사용 가능
     } catch (ex: IOException) {
         // Error occurred while creating the File
         ex.printStackTrace()
@@ -125,14 +124,13 @@ fun getPictureIntent_Shared_Under_Q(context: Context): Intent {
 fun getPictureIntent_Shared_Q_N_Over(context: Context): Intent {
     photoSharedURI_Q_N_OVER = Uri.EMPTY
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-    val picturePath = Environment.DIRECTORY_PICTURES
     val contentValues = ContentValues()
     contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "UriForAndroidQ_${timeStamp}.jpg")
-    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
-    contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, picturePath)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        contentValues.put(MediaStore.Images.Media.IS_PENDING, 1)
-    }
+    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+    contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES) //'RELATIVE_PATH', RequiresApi Q
+//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//        contentValues.put(MediaStore.Images.Media.IS_PENDING, 1)
+//    }
 
     photoSharedURI_Q_N_OVER = context.contentResolver.insert(
         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -143,7 +141,7 @@ fun getPictureIntent_Shared_Q_N_Over(context: Context): Intent {
     //2)MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)  content://media/external/images/media/1009
     //3)MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY) content://media/external_primary/images/media/1007
 
-    Log.w("syTest", "getPictureIntent_Shared_Q URI = " + photoSharedURI_Q_N_OVER)
+    Log.w("syTest", "getPictureIntent_Shared_Q URI = $photoSharedURI_Q_N_OVER")
 
     //2)content://media/external_primary/images/media/1006
     val fullSizeCaptureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)

@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
      * Call 3)카메라 촬영 이미지 (원본 Full-Size)
      */
     private fun takePictureFullSize() {
-        val fullSizePictureIntent = CameraIntentMaker.getPictureIntent(applicationContext)
+        val fullSizePictureIntent = getPictureIntent(applicationContext)
         fullSizePictureIntent.resolveActivity(packageManager)?.also {
             startActivityForResult(fullSizePictureIntent, REQ_IMG_CAPTURE_FULL_SIZE)
         }
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
     private fun takePictureFullSize_Shared() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val fullSizePictureIntent =
-                CameraIntentMaker.getPictureIntent_Shared_Q_N_Over(applicationContext)//TODO 정상 동작 되구로
+                getPictureIntent_Shared_Q_N_Over(applicationContext)
             fullSizePictureIntent.resolveActivity(packageManager)?.also {
                 startActivityForResult(
                     fullSizePictureIntent,
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             //TODO Permission Check 필요
             val fullSizePictureIntent =
-                CameraIntentMaker.getPictureIntent_Shared_Under_Q(applicationContext)
+                getPictureIntent_Shared_Under_Q(applicationContext)
             fullSizePictureIntent.resolveActivity(packageManager)?.also {
                 startActivityForResult(
                     fullSizePictureIntent,
@@ -86,9 +86,7 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
-
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         super.onActivityResult(requestCode, resultCode, intent)
@@ -120,15 +118,15 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE -> {
-                    setAdjustedUri(CameraIntentMaker.photoURI)
+                    setAdjustedUri(photoURI)
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q -> {
-                    setAdjustedUri(CameraIntentMaker.photoSharedURI_UNDER_Q)
+                    setAdjustedUri(photoSharedURI_UNDER_Q)
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE_SHARED_Q_AND_OVER -> {
-
+                    setAdjustedUri(photoSharedURI_Q_N_OVER)
                 }
             }
         }

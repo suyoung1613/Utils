@@ -19,6 +19,13 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
 
+    <!--todo 필수 인지 확인 필요-->
+    <!--    <queries>
+            <intent>
+                <action android:name="android.media.action.IMAGE_CAPTURE" />
+            </intent>
+        </queries>-->
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
