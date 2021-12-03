@@ -32,6 +32,7 @@ fun getPictureIntent(context: Context): Intent {
     val fullSizeCaptureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
     //1) File 생성 - 촬영 사진이 저장 될
+    //photoFile 경로 = /storage/emulated/0/Android/data/패키지명/files/Pictures/
     val photoFile: File? = try {
         createImageFile(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
     } catch (ex: IOException) {

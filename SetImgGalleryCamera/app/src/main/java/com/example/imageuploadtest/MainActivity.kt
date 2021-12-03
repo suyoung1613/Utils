@@ -38,11 +38,17 @@ class MainActivity : AppCompatActivity() {
      */
     private fun pickImg() {
         Intent(Intent.ACTION_PICK).apply {
-            type = MediaStore.Images.Media.CONTENT_TYPE
             data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             startActivityForResult(this, REQ_SELECT_IMG)
         }
-
+//
+//        Intent(Intent.ACTION_GET_CONTENT).apply {
+//            type = "image/*"
+//            startActivityForResult(
+//                Intent.createChooser(this, "Get Album"),
+//                REQ_SELECT_IMG
+//            )
+//        }
     }
 
     /**
@@ -101,7 +107,7 @@ class MainActivity : AppCompatActivity() {
 
                     val needResize = true
                     if (needResize) {
-                        setAdjustedUri(currentImageUri)
+                        setAdjImgUri(currentImageUri)
                     } else {
                         setImgUri(currentImageUri)
                     }
@@ -118,19 +124,18 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE -> {
-                    setAdjustedUri(photoURI)
+                    setAdjImgUri(photoURI)
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q -> {
-                    setAdjustedUri(photoSharedURI_UNDER_Q)
+                    setAdjImgUri(photoSharedURI_UNDER_Q)
                 }
 
                 REQ_IMG_CAPTURE_FULL_SIZE_SHARED_Q_AND_OVER -> {
-                    setAdjustedUri(photoSharedURI_Q_N_OVER)
+                    setAdjImgUri(photoSharedURI_Q_N_OVER)
                 }
             }
         }
-
     }
 
 
@@ -159,7 +164,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Set Img 2) Uri를 사용해 이미지 셋 (Resize + Rotate가 필요할 경우 사용)
      */
-    private fun setAdjustedUri(imgUri: Uri) {
+    private fun setAdjImgUri(imgUri: Uri) {
         //1)회전할 각도 구하기
         var degrees = 0f
         contentResolver.openInputStream(imgUri)?.use { inputStream ->
