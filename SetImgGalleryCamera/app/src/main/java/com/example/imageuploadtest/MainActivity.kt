@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
      * Call 3)카메라 촬영 이미지 (원본 Full-Size)
      */
     private fun takePictureFullSize() {
-        val fullSizePictureIntent = getPictureIntent(applicationContext)
+        val fullSizePictureIntent = getPictureIntent_App_Specific(applicationContext)
         fullSizePictureIntent.resolveActivity(packageManager)?.also {
             startActivityForResult(fullSizePictureIntent, REQ_IMG_CAPTURE_FULL_SIZE)
         }

@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="40dp"
-                android:text="3) Camera With Origin Size"
+                android:text="3) Camera With Origin Size(Specific 영역)"
                 android:textSize="30dp" />
 
 

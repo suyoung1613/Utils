@@ -20,14 +20,15 @@ const val REQ_SELECT_IMG = 200 //이미지 픽
 const val REQ_IMG_CAPTURE = 300 //썸네일 크기
 const val REQ_IMG_CAPTURE_FULL_SIZE =
     400 //앱 전용 공간 - No Need WRITE Permission After Android 4.3 (API level 18)
-const val REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q = 500 //공용공간 - UNDER Q, Need WRITE Permission
-const val REQ_IMG_CAPTURE_FULL_SIZE_SHARED_Q_AND_OVER = 600//공용공간 Q AND OVER -...
+const val REQ_IMG_CAPTURE_FULL_SIZE_SHARED_UNDER_Q = 500 //공용공간 - Q미만, Need WRITE Permission
+const val REQ_IMG_CAPTURE_FULL_SIZE_SHARED_Q_AND_OVER = 600//공용공간 Q이상
 
 lateinit var photoURI: Uri
-lateinit var photoSharedURI_Q_N_OVER: Uri
 lateinit var photoSharedURI_UNDER_Q: Uri
+lateinit var photoSharedURI_Q_N_OVER: Uri
 
-fun getPictureIntent(context: Context): Intent {
+
+fun getPictureIntent_App_Specific(context: Context): Intent {
     photoURI = Uri.EMPTY
     val fullSizeCaptureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
 
